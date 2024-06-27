@@ -21,14 +21,14 @@
         type="text" v-model="newItem" placeholder = "Add an Item">
       <label>
         <input type="checkbox" v-model="newItemHighPriority">
-        High Priority
+        Важно
       </label>
     <button @click="saveItem" :disabled="newItem.length === 0" class="btn btn-primary">Сохранить</button>
     </div>
 	<p v-if="items.length === 0">Отлично! Ты всё сделал!</p>
 	<ul>
     <li 
-        v-for="item in items" 
+        v-for="item in reversedItems" 
         @click="togglePurchased(item)"
         :key="item.id"
         class="static-class"
@@ -54,6 +54,11 @@
             {id: 2, label:'Есть', purchased: true, highPriority: false},
             {id: 3, label:'Гладить кошку', purchased: false, highPriority: true},
           ]
+        }
+      },
+	  computed:{
+        reversedItems(){
+          return [...this.items].reverse()
         }
       },
 	  methods:{
