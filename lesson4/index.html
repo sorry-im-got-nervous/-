@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@3.x/dist/vuetify.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+  
+  <title>Ежедневник</title>
+  
+	<style>
+	  .task-done {
+		text-decoration: line-through;
+	  }
+
+	  .background-image {
+		background-image: url('icon.jpg');
+		background-size: cover;
+		background-position: center;
+	  }
+
+	  /* Стиль для поля ввода */
+		.input-field .v-input__control .v-input__slot {
+		background-color: rgba(255, 255, 255, 1); /* Полная непрозрачность */
+		}
+	</style>
+  
+</head>
+
+
+
+<body>
+  <div id="app">
+    <v-app>
+      <v-main class="bg-blue-lighten-5 background-image">
+        <v-container>
+          <h1 class="text-primary">Мой Ежедневник</h1>
+          <v-text-field v-model="newTask" class="mt-3" label="Новая задача" @keyup.enter="addTask" 
+    :style="{ backgroundColor: 'white' }"></v-text-field>
+          <v-btn color="primary" @click="addTask" class="mt-4 mb-4">Добавить задачу</v-btn>
+          <v-list class="pa-0 ma-0  rounded-lg">
+            <v-list-item class="pa-4 ma-0" v-for="(task, index) in tasks" :key="index" @click="toggleTaskDone(index)">
+              <v-list-item-content>
+                <v-list-item-title :class="{ 'task-done': task.done }">{{ task.text }}</v-list-item-title>
+                <v-list-item-subtitle class="pt-2 pb-2">{{ task.date }}</v-list-item-subtitle>
+              </v-list-item-content>
+			<v-list-item-action>
+			  <v-btn icon color="primary" @click.stop="editTask(index)" title="Редактировать задачу" style="width: 24px; height: 24px;" class="mr-2">
+				<v-icon class="pa-1 ma-0" style="font-size: 16px;">mdi-pencil</v-icon>
+			  </v-btn>
+			  <v-btn icon color="error" @click.stop="removeTask(index)" title="Удалить задачу" style="width: 24px; height: 24px;">
+				<v-icon class="pa-1 ma-0" style="font-size: 16px;">mdi-delete</v-icon>
+			  </v-btn>
+			</v-list-item-action>
+            </v-list-item>
+          </v-list>
+        </v-container>
+      </v-main>
+
+      <v-dialog v-model="editDialog" max-width="500px">
+        <v-card>
+          <v-card-title>Редактировать задачу</v-card-title>
+          <v-card-text>
+            <v-text-field v-model="editedTask.text" label="Задача"></v-text-field>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" text @click="saveTask">Сохранить</v-btn>
+            <v-btn color="grey" text @click="cancelEdit">Отмена</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-app>
+  </div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify@3.x/dist/vuetify.min.js"></script>
+  <script>
+    const { createApp } = Vue
+    const { createVuetify } = Vuetify
+
+    const vuetify = createVuetify()
+
+    const app = createApp({
+      data() {
+        return {
+          newTask: '',
+          tasks: [],
+          editDialog: false,
+          editedTask: {},
+          editedIndex: -1
+        }
+      },
+      methods: {
+        addTask() {
+          if (this.newTask.trim()) {
+            this.tasks.push({
+              text: this.newTask,
+              date: new Date().toLocaleString(),
+              done: false
+            })
+            this.newTask = ''
+          }
+        },
+        removeTask(index) {
+          this.tasks.splice(index, 1)
+        },
+        editTask(index) {
+          this.editedIndex = index
+          this.editedTask = Object.assign({}, this.tasks[index])
+          this.editDialog = true
+        },
+        saveTask() {
+          Object.assign(this.tasks[this.editedIndex], this.editedTask)
+          this.editDialog = false
+          this.editedIndex = -1
+        },
+        cancelEdit() {
+          this.editDialog = false
+          this.editedIndex = -1
+        },
+        toggleTaskDone(index) {
+          this.tasks[index].done = !this.tasks[index].done
+        }
+      }
+    })
+
+    app.use(vuetify)
+    app.mount('#app')
+  </script>
+  
+</body>
+</html>
