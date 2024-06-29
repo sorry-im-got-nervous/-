@@ -21,7 +21,7 @@
       <div class="content">
         <a :href="`https://github.com/${username}`" class="header">{{user.name}}</a>
         <div class="meta">
-          <span class="date">Joined in {{user.created_at}}</span>
+          <span class="date">Joined in {{formatDate(user.created_at)}}</span>
         </div>
         <div class="description">
           {{user.bio}}
@@ -39,7 +39,7 @@
   <script src="https://unpkg.com/vue@3"></script>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
-  <!-- Your JavaScript Code :) -->
+  <!-- Your JavaScript Code -->
   <script>
     Vue.createApp({
       data(){
@@ -56,6 +56,12 @@
       data(){
         return {
           user: {}
+        }
+      },
+      methods: {
+        formatDate(dateString) {
+          const date = new Date(dateString);
+          return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
         }
       },
       async created(){
